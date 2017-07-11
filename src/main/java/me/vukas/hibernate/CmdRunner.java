@@ -1,23 +1,64 @@
 package me.vukas.hibernate;
 
-import me.vukas.hibernate.domen.*;
-import me.vukas.hibernate.domen.bidirekciona.*;
-import me.vukas.hibernate.domen.unidirekciona.*;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import me.vukas.hibernate.domen.EntitSaSekv;
+import me.vukas.hibernate.domen.EntitSaUUID;
+import me.vukas.hibernate.domen.Enumeracija;
+import me.vukas.hibernate.domen.Pogled;
+import me.vukas.hibernate.domen.Probniz;
+import me.vukas.hibernate.domen.bidirekciona.Dijete;
+import me.vukas.hibernate.domen.bidirekciona.DijeteVise;
+import me.vukas.hibernate.domen.bidirekciona.Jedan;
+import me.vukas.hibernate.domen.bidirekciona.Otac;
+import me.vukas.hibernate.domen.bidirekciona.OtacVise;
+import me.vukas.hibernate.domen.bidirekciona.UJedan;
+import me.vukas.hibernate.domen.hijerarhija.SubKlasa1;
+import me.vukas.hibernate.domen.hijerarhija.SubKlasa2;
+import me.vukas.hibernate.domen.unidirekciona.DijeteU;
+import me.vukas.hibernate.domen.unidirekciona.DijeteU2;
+import me.vukas.hibernate.domen.unidirekciona.DijeteViseSaAttr;
+import me.vukas.hibernate.domen.unidirekciona.DijeteViseU;
+import me.vukas.hibernate.domen.unidirekciona.JedanUni;
+import me.vukas.hibernate.domen.unidirekciona.OtacOdredjujeId;
+import me.vukas.hibernate.domen.unidirekciona.OtacU;
+import me.vukas.hibernate.domen.unidirekciona.OtacU2;
+import me.vukas.hibernate.domen.unidirekciona.OtacViseSaAttr;
+import me.vukas.hibernate.domen.unidirekciona.OtacViseU;
+import me.vukas.hibernate.domen.unidirekciona.SinPrimaId;
+import me.vukas.hibernate.domen.unidirekciona.SinPrimaIdOdOca;
+import me.vukas.hibernate.domen.unidirekciona.UJedanUni;
+import me.vukas.hibernate.domen.unidirekciona.ViseUViseSaAttr;
+import me.vukas.hibernate.domen.unidirekciona.ViseUViseSaAttrId;
 import me.vukas.hibernate.repo.PogledRepo;
 import me.vukas.hibernate.repo.ProbniRepo;
 import me.vukas.hibernate.repo.SeqRepo;
 import me.vukas.hibernate.repo.UUIDRepo;
-import me.vukas.hibernate.repo.bidirekciona.*;
-import me.vukas.hibernate.repo.unidirekciona.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
+import me.vukas.hibernate.repo.bidirekciona.DijeteRepo;
+import me.vukas.hibernate.repo.bidirekciona.DijeteViseRepo;
+import me.vukas.hibernate.repo.bidirekciona.JedanRepo;
+import me.vukas.hibernate.repo.bidirekciona.OtacRepo;
+import me.vukas.hibernate.repo.bidirekciona.OtacViseRepo;
+import me.vukas.hibernate.repo.bidirekciona.UJedanRepo;
+import me.vukas.hibernate.repo.bidirekciona.UJedanUniRepo;
+import me.vukas.hibernate.repo.hijerarhija.SuperKlasaRepo;
+import me.vukas.hibernate.repo.unidirekciona.DijeteU2Repo;
+import me.vukas.hibernate.repo.unidirekciona.DijeteURepo;
+import me.vukas.hibernate.repo.unidirekciona.DijeteViseURepo;
+import me.vukas.hibernate.repo.unidirekciona.OtacU2Repo;
+import me.vukas.hibernate.repo.unidirekciona.OtacURepo;
+import me.vukas.hibernate.repo.unidirekciona.OtacViseSaAttrRepo;
+import me.vukas.hibernate.repo.unidirekciona.OtacViseURepo;
+import me.vukas.hibernate.repo.unidirekciona.SinPrimaOdOcaRepo;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 @Component
 public class CmdRunner implements CommandLineRunner {
@@ -67,6 +108,12 @@ public class CmdRunner implements CommandLineRunner {
 
     @Autowired
     private SinPrimaOdOcaRepo sinPrimaOdOcaRepo;
+
+    @Autowired
+    private OtacViseSaAttrRepo otacViseSaAttrRepo;
+
+    @Autowired
+    private SuperKlasaRepo superKlasaRepo;
 
     @Autowired
     private PogledRepo pogledRepo;
@@ -162,6 +209,33 @@ public class CmdRunner implements CommandLineRunner {
         sinPrimaOdOcaRepo.save(spoc);
 
         System.out.println(sinPrimaOdOcaRepo.findOne(new SinPrimaId(4, 7)).getKom());
+
+        //--------
+        DijeteViseSaAttr dvsat = new DijeteViseSaAttr();
+
+        OtacViseSaAttr ovsat = new OtacViseSaAttr();
+
+        ViseUViseSaAttr vsaat = new ViseUViseSaAttr();
+        vsaat.setId(new ViseUViseSaAttrId());
+        vsaat.setDodatno("dodatno");
+        vsaat.setDijete(dvsat);
+
+        vsaat.setOtac(ovsat);   //moramo podesiti oca
+        ovsat.getViseUVise().add(vsaat);
+
+        otacViseSaAttrRepo.save(ovsat);
+
+        //-------
+
+        SubKlasa1 sk1 = new SubKlasa1();
+        sk1.setZajedno(123);
+        sk1.setNesto1("nesto1");
+        SubKlasa2 sk2 = new SubKlasa2();
+        sk2.setZajedno(456);
+        sk2.setNesto2("nesto2");
+
+        superKlasaRepo.save(sk1);
+        superKlasaRepo.save(sk2);
     }
 
     @Transactional
