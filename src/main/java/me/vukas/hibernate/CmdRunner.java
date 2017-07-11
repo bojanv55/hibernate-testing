@@ -7,6 +7,8 @@ import java.util.UUID;
 import me.vukas.hibernate.domen.EntitSaSekv;
 import me.vukas.hibernate.domen.EntitSaUUID;
 import me.vukas.hibernate.domen.Enumeracija;
+import me.vukas.hibernate.domen.JMBG;
+import me.vukas.hibernate.domen.NatlId;
 import me.vukas.hibernate.domen.Pogled;
 import me.vukas.hibernate.domen.Probniz;
 import me.vukas.hibernate.domen.bidirekciona.Dijete;
@@ -32,6 +34,7 @@ import me.vukas.hibernate.domen.unidirekciona.SinPrimaIdOdOca;
 import me.vukas.hibernate.domen.unidirekciona.UJedanUni;
 import me.vukas.hibernate.domen.unidirekciona.ViseUViseSaAttr;
 import me.vukas.hibernate.domen.unidirekciona.ViseUViseSaAttrId;
+import me.vukas.hibernate.repo.NatIdRepo;
 import me.vukas.hibernate.repo.PogledRepo;
 import me.vukas.hibernate.repo.ProbniRepo;
 import me.vukas.hibernate.repo.SeqRepo;
@@ -114,6 +117,9 @@ public class CmdRunner implements CommandLineRunner {
 
     @Autowired
     private SuperKlasaRepo superKlasaRepo;
+
+    @Autowired
+    private NatIdRepo natIdRepo;
 
     @Autowired
     private PogledRepo pogledRepo;
@@ -236,6 +242,29 @@ public class CmdRunner implements CommandLineRunner {
 
         superKlasaRepo.save(sk1);
         superKlasaRepo.save(sk2);
+
+        //--------
+
+        System.out.println(dijeteRepo.spojiSaViseViseIDajAtributDodatno(8L));
+
+        //---
+        NatlId nid = new NatlId();
+        nid.setJmbg(new JMBG("2"));
+        natIdRepo.save(nid);
+
+        //-----
+
+        System.out.println(dijeteRepo.dajOcevIdZaDjetetov(1L));
+        System.out.println(dijeteRepo.dajOcevIdZaDjetetovN(1L));
+        System.out.println(dijeteRepo.dajOcevId(1L));
+        System.out.println(dijeteRepo.dajOcevIdN(1L));
+
+        System.out.println(dijeteRepo.dajDto(1L));
+
+        System.out.println(dijeteRepo.dajOcevIdN2(1L));
+
+        Object[] vektor = dijeteRepo.vektor(1L);
+        System.out.println("a = " + ((Object[])vektor[0])[0] + " ; b= " + ((Object[])vektor[0])[1]);
     }
 
     @Transactional
